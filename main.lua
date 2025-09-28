@@ -1,29 +1,24 @@
 local Button = require("button")
+local Sharingan = require("sharingan")
 
--- Pastel rainbow for softer look
-local pastel_rainbow = {
-    {1.00, 0.70, 0.70},   -- Pastel Red
-    {1.00, 0.85, 0.70},   -- Pastel Orange
-    {1.00, 1.00, 0.70},   -- Pastel Yellow
-    {0.70, 1.00, 0.70},   -- Pastel Green
-    {0.70, 0.70, 1.00},   -- Pastel Blue
-    {0.80, 0.70, 1.00},   -- Pastel Indigo
-    {0.90, 0.70, 1.00}    -- Pastel Violet
-}
-
-local current_rainbow = pastel_rainbow
-local current_index = math.random(1, #current_rainbow)
 local btn_img = love.graphics.newImage("assets/button.png")
 local btn_hover_img = love.graphics.newImage("assets/button_hover.png")
+local sharingans = {
+    Sharingan.new(love.graphics.newImage("assets/sharingan/1.png")),
+    Sharingan.new(love.graphics.newImage("assets/sharingan/2.png")),
+    Sharingan.new(love.graphics.newImage("assets/sharingan/3.png")),
+    Sharingan.new(love.graphics.newImage("assets/sharingan/4.png"))
+}
+local current_index = 1
 
-local function next_color()
+local function next_sharingan()
     current_index = current_index + 1
-    if current_index > #current_rainbow then current_index = 1 end
+    if current_index > #sharingans then current_index = 1 end
 end
 
-local function prev_color()
+local function prev_sharingan()
     current_index = current_index - 1
-    if current_index < 1 then current_index = #current_rainbow end
+    if current_index < 1 then current_index = #sharingans end
 end
 
 local next_button = Button.new(
@@ -31,7 +26,7 @@ local next_button = Button.new(
     love.graphics.getWidth()/2 + btn_img:getWidth()/2 + 40,
     love.graphics.getHeight() - btn_img:getHeight() - 20,
     0,
-    next_color
+    next_sharingan
 )
 
 local prev_button = Button.new(
@@ -39,11 +34,11 @@ local prev_button = Button.new(
     love.graphics.getWidth()/2 - btn_img:getWidth()/2 - 40,
     love.graphics.getHeight() - btn_img:getHeight() - 20,
     180,
-    prev_color
+    prev_sharingan
 )
 
 function love.load()
-    love.graphics.setBackgroundColor({1, 1, 1})
+    love.graphics.setBackgroundColor({0, 0, 0})
 end
 
 function love.mousepressed()
@@ -52,15 +47,26 @@ function love.mousepressed()
 end
 
 function love.keypressed(key)
-    if key == "left" then prev_color() end
-    if key == "right" then next_color() end
 end
 
-function love.update()
+function love.update(dt)
+    local current_sharingan = sharingans[current_index]
+    current_sharingan:update(dt)
 end
 
 function love.draw()
-    love.graphics.setBackgroundColor(current_rainbow[current_index])
+    love.graphics.setColor(1, 1, 1)
+    local current_sharingan = sharingans[current_index]
+    current_sharingan:draw()
+
+    love.graphics.setColor(1, 1, 1, 0.7)
+    love.graphics.rectangle(
+        "fill",
+        0, love.graphics.getHeight() - 85,
+        love.graphics.getWidth(), 85
+    )
+
+    love.graphics.setColor(1, 1, 1)
     next_button:draw()
     prev_button:draw()
 end
